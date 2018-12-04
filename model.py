@@ -1,5 +1,7 @@
 import json
 from collections import defaultdict
+import evaluate
+import create_dataset
 
 def get_spotify_assignment(streams):
 	artist_counts = defaultdict(int)
@@ -18,13 +20,16 @@ def get_weighted_assignment(streams, weights):
 	total_weighted_counts = 0.0
 
 	for stream in streams:
+		stream_weight = 0.0
 		for key in stream:
 			if key in weights:
-				artist_weighted_counts[stream['artist']] += weights[key] * stream[key]
-				total_weighted_counts += weights[key] * stream[key]
+				stream_weight += weights[key] * stream[key]
+		stream_weight = max(0, stream_weight)
+		artist_weighted_counts[stream['artist']] += stream_weight
+		total_weighted_counts += stream_weight
 
 	for artist in artist_weighted_counts:
-		artist_weighted_counts[artist] /= total_weighted_count
+		artist_weighted_counts[artist] /= total_weighted_counts
 
 	return artist_weighted_counts
 
@@ -56,25 +61,48 @@ def get_groundtruth_assignment_by_voting(users):
 
 	return artist_counts
 
+def minimize_MSE_for_dataset(data, weights):
+	pass
+
 
 if __name__=='__main__':
-	with open('dataset.json', 'r') as f:
-		data = json.load(f)
+	data = create_dataset.generate_dataset(save=False)
 
 	spotify_assignment = get_spotify_assignment(data['streams'])
 
 	stream_keys = data['streams'][0].keys()
 
-	weights = pass
+	weights = {"first_listen": .2, "user_hearts_song": .25, "autoplay_song": -0.3, "user_playlist_song": .1, "spotify_playlist_song": -.15, "searched_song": .3, "searched_album": .3, "daily_mix": .05, "played_recently": .4}
 
-	streams_keys = data['streams'][0].keys()
-	weights_keys = weights.keys()
-
-	print("Streams have keys:", streams_keys)
-	print("Weights have keys:", weights_keys)
+	streams_keys = sorted(data['streams'][0].keys())
+	weights_keys = sorted(weights.keys())
 
 	weighted_assignment = get_weighted_assignment(data['streams'], weights)
 
 	groundtruth_assignment_by_splitting = get_groundtruth_assignment_by_splitting(data['users'])
 	groundtruth_assignment_by_voting = get_groundtruth_assignment_by_voting(data['users'])
+
+	print("MSE between Spotify and splitting groundtruth:", evaluate.calculate_mean_squared_error(spotify_assignment, groundtruth_assignment_by_splitting))
+
+	print("MSE between weighted and splitting groundtruth:", evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting))
+
+	print("MSE between Spotify and voting groundtruth:", evaluate.calculate_mean_squared_error(spotify_assignment, groundtruth_assignment_by_voting))
+
+	print("MSE between weighted and voting groundtruth:", evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_voting))
+
+	print("AAPE between Spotify and splitting groundtruth:", evaluate.calculate_average_absolute_percent_error(spotify_assignment, groundtruth_assignment_by_splitting))
+
+	print("AAPE between weighted and splitting groundtruth:", evaluate.calculate_average_absolute_percent_error(weighted_assignment, groundtruth_assignment_by_splitting))
+
+	print("AAPE between Spotify and voting groundtruth:", evaluate.calculate_average_absolute_percent_error(spotify_assignment, groundtruth_assignment_by_voting))
+
+	print("AAPE between weighted and voting groundtruth:", evaluate.calculate_average_absolute_percent_error(weighted_assignment, groundtruth_assignment_by_voting))
+
+	print("KL between Spotify and splitting groundtruth:", evaluate.calculate_kl_divergence(spotify_assignment, groundtruth_assignment_by_splitting))
+
+	print("KL between weighted and splitting groundtruth:", evaluate.calculate_kl_divergence(weighted_assignment, groundtruth_assignment_by_splitting))
+
+	print("KL between Spotify and voting groundtruth:", evaluate.calculate_kl_divergence(spotify_assignment, groundtruth_assignment_by_voting))
+
+	print("KL between weighted and voting groundtruth:", evaluate.calculate_kl_divergence(weighted_assignment, groundtruth_assignment_by_voting))
 
