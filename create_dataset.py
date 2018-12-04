@@ -19,10 +19,10 @@ STREAMS_BINOMIAL_P = .5
 AFFINITY_LISTEN_PROB = .4
 
 ARTISTS = {
-	"Drake": {"cult-following": 2, "popularity": 100},
+	"Drake": {"cult-following": 5, "popularity": 100},
 	"Beyonce": {"cult-following": 10, "popularity": 20},
 	"Radiohead": {"cult-following": 15, "popularity": 10},
-	"MXXNLIGHT": {"cult-following": .2, "popularity": .5},
+	"MXXNLIGHT": {"cult-following": .2, "popularity": .3},
 	"Frank Ocean": {"cult-following": 20, "popularity": 2},
 	"J Cole": {"cult-following": 15, "popularity": 20},
 	"Kendrick": {"cult-following": 15, "popularity": 25},
