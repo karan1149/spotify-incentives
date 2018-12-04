@@ -18,6 +18,7 @@ def calculate_average_absolute_percent_error(predicted, groundtruth):
 
 	return total_absolute_percent_error / total_names
 
+# Returns mean squared error in probability distributions.
 def calculate_mean_squared_error(predicted, groundtruth):
 	assert(set(predicted.keys()) == set(groundtruth.keys()))
 
@@ -30,6 +31,8 @@ def calculate_mean_squared_error(predicted, groundtruth):
 
 	return total_mse
 
+# Returns KL divergence in probability distributions.
+# Note that this metric is asymmetric.
 def calculate_kl_divergence(predicted, groundtruth):
 	assert(set(predicted.keys()) == set(groundtruth.keys()))
 
