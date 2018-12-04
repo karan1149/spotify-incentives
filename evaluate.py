@@ -8,8 +8,8 @@ import math
 # -45% and another has 15%, the result is .3.
 def calculate_average_absolute_percent_error(predicted, groundtruth):
 	assert(set(predicted.keys()) == set(groundtruth.keys()))
-	assert(sum(predicted.values()) == sum(groundtruth.values()) and \
-		sum(predicted.values()) == 1)
+	assert(abs(sum(groundtruth.values()) - 1) < 0.001 and \
+		abs(sum(predicted.values()) - 1) < 0.001)
 
 	total_names = len(predicted)
 
@@ -23,8 +23,8 @@ def calculate_average_absolute_percent_error(predicted, groundtruth):
 # Returns mean squared error in probability distributions.
 def calculate_mean_squared_error(predicted, groundtruth):
 	assert(set(predicted.keys()) == set(groundtruth.keys()))
-	assert(sum(predicted.values()) == sum(groundtruth.values()) and \
-		sum(predicted.values()) == 1)
+	assert(abs(sum(groundtruth.values()) - 1) < 0.001 and \
+		abs(sum(predicted.values()) - 1) < 0.001)
 
 	total_names = len(predicted)
 
@@ -39,8 +39,8 @@ def calculate_mean_squared_error(predicted, groundtruth):
 # Note that this metric is asymmetric.
 def calculate_kl_divergence(predicted, groundtruth):
 	assert(set(predicted.keys()) == set(groundtruth.keys()))
-	assert(sum(predicted.values()) == sum(groundtruth.values()) and \
-		sum(predicted.values()) == 1)
+	assert(abs(sum(groundtruth.values()) - 1) < 0.001 and \
+		abs(sum(predicted.values()) - 1) < 0.001)
 
 	total_names = len(predicted)
 
