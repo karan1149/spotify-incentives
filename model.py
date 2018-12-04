@@ -3,13 +3,13 @@ from collections import defaultdict
 
 def get_spotify_assignment(streams):
 	artist_counts = defaultdict(int)
-	total_count = len(streams)
+	total_count = float(len(streams))
 
 	for stream in streams:
 		artist_counts[stream['artist']] += 1
 
 	for artist in artist_counts:
-		artist_counts[artist] /= float(total_count)
+		artist_counts[artist] /= total_count
 
 	return artist_counts
 
@@ -63,7 +63,16 @@ if __name__=='__main__':
 
 	spotify_assignment = get_spotify_assignment(data['streams'])
 
+	stream_keys = data['streams'][0].keys()
+
 	weights = pass
+
+	streams_keys = data['streams'][0].keys()
+	weights_keys = weights.keys()
+
+	print("Streams have keys:", streams_keys)
+	print("Weights have keys:", weights_keys)
+
 	weighted_assignment = get_weighted_assignment(data['streams'], weights)
 
 	groundtruth_assignment_by_splitting = get_groundtruth_assignment_by_splitting(data['users'])
