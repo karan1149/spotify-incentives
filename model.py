@@ -29,13 +29,27 @@ def get_weighted_assignment(streams, weights):
 	return artist_weighted_counts
 
 
-def get_groundtruth_assignment(fanbases):
+def get_groundtruth_assignment_by_splitting(users):
+	artist_counts = defaultdict(int)
+	total_count = len(users)
+
+	for user in users:
+		for artist in user:
+			artist_counts[artist] += 1.0 / len(user)
+
+	for artist in artist_counts:
+		artist_counts[artist] /= total_count
+
+	return artist_counts
+
+def get_groundtruth_assignment_by_voting(users):
 	artist_counts = defaultdict(int)
 	total_count = 0.0
 
-	for artist in fanbases:
-		artist_counts[artist] += fanbases[artist]
-		total_count += fanbases[artist]
+	for user in users:
+		for artist in user:
+			artist_counts[artist] += 1
+			total_count += 1
 
 	for artist in artist_counts:
 		artist_counts[artist] /= total_count
@@ -52,5 +66,6 @@ if __name__=='__main__':
 	weights = pass
 	weighted_assignment = get_weighted_assignment(data['streams'], weights)
 
-	groundtruth_assignment = get_groundtruth_assignment(data['fanbases'])
+	groundtruth_assignment_by_splitting = get_groundtruth_assignment_by_splitting(data['users'])
+	groundtruth_assignment_by_voting = get_groundtruth_assignment_by_voting(data['users'])
 
