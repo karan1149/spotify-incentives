@@ -4,7 +4,7 @@ import evaluate
 import create_dataset
 
 def get_spotify_assignment(streams):
-	artist_counts = defaultdict(int)
+	artist_counts = {artist: 0 for artist in create_dataset.ARTISTS}
 	total_count = float(len(streams))
 
 	for stream in streams:
@@ -16,7 +16,7 @@ def get_spotify_assignment(streams):
 	return artist_counts
 
 def get_weighted_assignment(streams, weights):
-	artist_weighted_counts = defaultdict(float)
+	artist_weighted_counts = {artist: 0.0 for artist in create_dataset.ARTISTS}
 	total_weighted_counts = 0.0
 
 	for stream in streams:
@@ -35,7 +35,7 @@ def get_weighted_assignment(streams, weights):
 
 
 def get_groundtruth_assignment_by_splitting(users):
-	artist_counts = defaultdict(int)
+	artist_counts = {artist: 0.0 for artist in create_dataset.ARTISTS}
 	total_count = len(users)
 
 	for user in users:
@@ -48,7 +48,7 @@ def get_groundtruth_assignment_by_splitting(users):
 	return artist_counts
 
 def get_groundtruth_assignment_by_voting(users):
-	artist_counts = defaultdict(int)
+	artist_counts = {artist: 0 for artist in create_dataset.ARTISTS}
 	total_count = 0.0
 
 	for user in users:
@@ -63,6 +63,20 @@ def get_groundtruth_assignment_by_voting(users):
 
 def minimize_MSE_for_dataset(data, weights):
 	pass
+
+def evaluate_assignment(assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting):
+	print("MSE for splitting groundtruth:", evaluate.calculate_mean_squared_error(assignment, groundtruth_assignment_by_splitting))
+
+	print("MSE for voting groundtruth:", evaluate.calculate_mean_squared_error(assignment, groundtruth_assignment_by_voting))
+
+	print("AAPE for splitting groundtruth:", evaluate.calculate_average_absolute_percent_error(assignment, groundtruth_assignment_by_splitting))
+
+	print("AAPE for voting groundtruth:", evaluate.calculate_average_absolute_percent_error(assignment, groundtruth_assignment_by_voting))
+
+	print("KL for splitting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_splitting))
+
+	print("KL for voting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_voting))
+
 
 
 if __name__=='__main__':
@@ -82,27 +96,8 @@ if __name__=='__main__':
 	groundtruth_assignment_by_splitting = get_groundtruth_assignment_by_splitting(data['users'])
 	groundtruth_assignment_by_voting = get_groundtruth_assignment_by_voting(data['users'])
 
-	print("MSE between Spotify and splitting groundtruth:", evaluate.calculate_mean_squared_error(spotify_assignment, groundtruth_assignment_by_splitting))
-
-	print("MSE between weighted and splitting groundtruth:", evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting))
-
-	print("MSE between Spotify and voting groundtruth:", evaluate.calculate_mean_squared_error(spotify_assignment, groundtruth_assignment_by_voting))
-
-	print("MSE between weighted and voting groundtruth:", evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_voting))
-
-	print("AAPE between Spotify and splitting groundtruth:", evaluate.calculate_average_absolute_percent_error(spotify_assignment, groundtruth_assignment_by_splitting))
-
-	print("AAPE between weighted and splitting groundtruth:", evaluate.calculate_average_absolute_percent_error(weighted_assignment, groundtruth_assignment_by_splitting))
-
-	print("AAPE between Spotify and voting groundtruth:", evaluate.calculate_average_absolute_percent_error(spotify_assignment, groundtruth_assignment_by_voting))
-
-	print("AAPE between weighted and voting groundtruth:", evaluate.calculate_average_absolute_percent_error(weighted_assignment, groundtruth_assignment_by_voting))
-
-	print("KL between Spotify and splitting groundtruth:", evaluate.calculate_kl_divergence(spotify_assignment, groundtruth_assignment_by_splitting))
-
-	print("KL between weighted and splitting groundtruth:", evaluate.calculate_kl_divergence(weighted_assignment, groundtruth_assignment_by_splitting))
-
-	print("KL between Spotify and voting groundtruth:", evaluate.calculate_kl_divergence(spotify_assignment, groundtruth_assignment_by_voting))
-
-	print("KL between weighted and voting groundtruth:", evaluate.calculate_kl_divergence(weighted_assignment, groundtruth_assignment_by_voting))
+	print("\nSpotify:")
+	evaluate_assignment(spotify_assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting)
+	print("\nWeighted:")
+	evaluate_assignment(weighted_assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting)
 
