@@ -10,7 +10,7 @@ from tqdm import tqdm
 import random
 
 OUTPUT_FILE = 'dataset.json'
-NUM_USERS = 1000
+NUM_USERS = 10000
 GEOMETRIC_AFFINITY_PROB = .2
 
 STREAMS_BINOMIAL_N = 500

@@ -4,6 +4,7 @@ import evaluate
 import create_dataset
 from tqdm import tqdm
 from assignments import *
+import matplotlib.pyplot as plt
 
 LR = 0.001
 EPSILON = 0.001
@@ -42,6 +43,12 @@ def evaluate_assignment(assignment, groundtruth_assignment_by_splitting, groundt
 	print("KL for splitting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_splitting))
 
 	print("KL for voting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_voting))
+
+def perturb_weights_from_initial(data, weights):
+	pass
+
+def perturb_weights_continuously(data, weights):
+	pass
 
 
 if __name__=='__main__':

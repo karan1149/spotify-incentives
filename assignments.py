@@ -1,3 +1,5 @@
+import create_dataset
+
 def get_spotify_assignment(streams):
 	artist_counts = {artist: 0 for artist in create_dataset.ARTISTS}
 	total_count = float(len(streams))
