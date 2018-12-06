@@ -2,6 +2,10 @@ import json
 from collections import defaultdict
 import evaluate
 import create_dataset
+from tqdm import tqdm
+
+LR = 0.001
+EPSILON = 0.001
 
 def get_spotify_assignment(streams):
 	artist_counts = {artist: 0 for artist in create_dataset.ARTISTS}
@@ -61,8 +65,27 @@ def get_groundtruth_assignment_by_voting(users):
 
 	return artist_counts
 
+def calculate_gradient(data, weights, old_error):
+	gradient = {k: 0.0 for k in weights}
+	for k in weights:
+		weights[k] += EPSILON
+		weighted_assignment = get_weighted_assignment(data['streams'], weights)
+		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+		gradient[k] = (error - old_error) / EPSILON
+	return gradient
+
 def minimize_MSE_for_dataset(data, weights):
-	pass
+	weighted_assignment = get_weighted_assignment(data['streams'], weights)
+	old_error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+	for i in tqdm(range(1000)):
+		gradient = calculate_gradient(data, weights, old_error)
+		for k in gradient:
+			weights[k] -= gradient[k] * LR
+		weighted_assignment = get_weighted_assignment(data['streams'], weights)
+		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+		print("New error:", error)
+		print("Difference:", old_error - error)
+		old_error = error
 
 def evaluate_assignment(assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting):
 	print("MSE for splitting groundtruth:", evaluate.calculate_mean_squared_error(assignment, groundtruth_assignment_by_splitting))
@@ -76,7 +99,6 @@ def evaluate_assignment(assignment, groundtruth_assignment_by_splitting, groundt
 	print("KL for splitting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_splitting))
 
 	print("KL for voting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_voting))
-
 
 
 if __name__=='__main__':
@@ -98,6 +120,14 @@ if __name__=='__main__':
 
 	print("\nSpotify:")
 	evaluate_assignment(spotify_assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting)
+	print(spotify_assignment)
 	print("\nWeighted:")
 	evaluate_assignment(weighted_assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting)
+	print(weighted_assignment)
+
+	print()
+	print(groundtruth_assignment_by_splitting)
+
+	# minimize_MSE_for_dataset(data, weights)
+	# print(weights)
 
