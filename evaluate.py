@@ -20,8 +20,8 @@ def calculate_average_absolute_percent_error(predicted, groundtruth):
 
 	return total_absolute_percent_error / total_names
 
-# Returns mean squared error in probability distributions.
-def calculate_mean_squared_error(predicted, groundtruth):
+# Returns sum squared error in probability distributions.
+def calculate_sum_squared_error(predicted, groundtruth):
 	assert(set(predicted.keys()) == set(groundtruth.keys()))
 	assert(abs(sum(groundtruth.values()) - 1) < 0.001 and \
 		abs(sum(predicted.values()) - 1) < 0.001)
@@ -61,14 +61,14 @@ def test_calculate_average_absolute_percent_error():
 	groundtruth = {'a': .25, 'b': .5, 'c': .25}
 	assert(calculate_average_absolute_percent_error(predicted, groundtruth) == .5)
 
-def test_calculate_mean_squared_error():
+def test_calculate_sum_squared_error():
 	predicted = {'a': .25, 'b': .5, 'c': .25}
 	groundtruth = {'a': .25, 'b': .5, 'c': .25}
-	assert(calculate_mean_squared_error(predicted, groundtruth) == 0)
+	assert(calculate_sum_squared_error(predicted, groundtruth) == 0)
 
 	predicted = {'a': .5, 'b': .25, 'c': .25}
 	groundtruth = {'a': .25, 'b': .5, 'c': .25}
-	assert(calculate_mean_squared_error(predicted, groundtruth) == .125)
+	assert(calculate_sum_squared_error(predicted, groundtruth) == .125)
 
 def test_calculate_kl_divergence():
 	predicted = {'a': .25, 'b': .5, 'c': .25}
@@ -81,5 +81,5 @@ def test_calculate_kl_divergence():
 
 if __name__=='__main__':
 	test_calculate_average_absolute_percent_error()
-	test_calculate_mean_squared_error()
+	test_calculate_sum_squared_error()
 	test_calculate_kl_divergence()

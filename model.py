@@ -15,27 +15,27 @@ def calculate_gradient(data, weights, old_error):
 	for k in weights:
 		weights[k] += EPSILON
 		weighted_assignment = get_weighted_assignment(data['streams'], weights)
-		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+		error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
 		gradient[k] = (error - old_error) / EPSILON
 	return gradient
 
 def minimize_MSE_for_dataset(data, weights):
 	weighted_assignment = get_weighted_assignment(data['streams'], weights)
-	old_error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+	old_error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
 	for i in tqdm(range(1000)):
 		gradient = calculate_gradient(data, weights, old_error)
 		for k in gradient:
 			weights[k] -= gradient[k] * LR
 		weighted_assignment = get_weighted_assignment(data['streams'], weights)
-		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+		error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
 		print("New error:", error)
 		print("Difference:", old_error - error)
 		old_error = error
 
 def evaluate_assignment(assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting):
-	print("MSE for splitting groundtruth:", evaluate.calculate_mean_squared_error(assignment, groundtruth_assignment_by_splitting))
+	print("MSE for splitting groundtruth:", evaluate.calculate_sum_squared_error(assignment, groundtruth_assignment_by_splitting))
 
-	print("MSE for voting groundtruth:", evaluate.calculate_mean_squared_error(assignment, groundtruth_assignment_by_voting))
+	print("MSE for voting groundtruth:", evaluate.calculate_sum_squared_error(assignment, groundtruth_assignment_by_voting))
 
 	print("AAPE for splitting groundtruth:", evaluate.calculate_average_absolute_percent_error(assignment, groundtruth_assignment_by_splitting))
 
@@ -49,7 +49,7 @@ def perturb_weights_from_initial(data, weights, groundtruth_assignment_by_splitt
 	initial_weights = weights.copy()
 	weights_size = len(weights)
 	weighted_assignment = get_weighted_assignment(data['streams'], initial_weights)
-	initial_error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+	initial_error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
 	errors = [0]
 	for i in tqdm(range(100)):
 		curr_weights = initial_weights.copy()
@@ -58,7 +58,7 @@ def perturb_weights_from_initial(data, weights, groundtruth_assignment_by_splitt
 			curr_weights[k] += perturbations[i]
 
 		weighted_assignment = get_weighted_assignment(data['streams'], curr_weights)
-		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting) - initial_error
+		error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting) - initial_error
 
 		errors.append(error)
 
@@ -74,7 +74,7 @@ def perturb_weights_continuously(data, weights, groundtruth_assignment_by_splitt
 	initial_weights = weights.copy()
 	weights_size = len(initial_weights)
 	weighted_assignment = get_weighted_assignment(data['streams'], initial_weights)
-	initial_error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+	initial_error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
 	errors = [0]
 	for i in tqdm(range(100)):
 		perturbations = np.random.randn(weights_size) * 0.1
@@ -82,7 +82,7 @@ def perturb_weights_continuously(data, weights, groundtruth_assignment_by_splitt
 			initial_weights[k] += perturbations[i]
 
 		weighted_assignment = get_weighted_assignment(data['streams'], initial_weights)
-		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting) - initial_error
+		error = evaluate.calculate_sum_squared_error(weighted_assignment, groundtruth_assignment_by_splitting) - initial_error
 
 		errors.append(error)
 
@@ -130,7 +130,7 @@ if __name__=='__main__':
 	# minimize_MSE_for_dataset(data, weights)
 	# print(weights)
 
-	spotify_splitting_mse_error = evaluate.calculate_mean_squared_error(spotify_assignment, groundtruth_assignment_by_splitting)
+	spotify_splitting_mse_error = evaluate.calculate_sum_squared_error(spotify_assignment, groundtruth_assignment_by_splitting)
 
 	perturb_weights_from_initial(data, weights, groundtruth_assignment_by_splitting, spotify_splitting_mse_error)
 	perturb_weights_continuously(data, weights, groundtruth_assignment_by_splitting, spotify_splitting_mse_error)
