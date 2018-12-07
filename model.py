@@ -5,6 +5,7 @@ import create_dataset
 from tqdm import tqdm
 from assignments import *
 import matplotlib.pyplot as plt
+import numpy as np
 
 LR = 0.001
 EPSILON = 0.001
@@ -44,11 +45,56 @@ def evaluate_assignment(assignment, groundtruth_assignment_by_splitting, groundt
 
 	print("KL for voting groundtruth:", evaluate.calculate_kl_divergence(assignment, groundtruth_assignment_by_voting))
 
-def perturb_weights_from_initial(data, weights):
-	pass
+def perturb_weights_from_initial(data, weights, groundtruth_assignment_by_splitting, spotify_splitting_mse_error):
+	initial_weights = weights.copy()
+	weights_size = len(weights)
+	weighted_assignment = get_weighted_assignment(data['streams'], initial_weights)
+	initial_error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+	errors = [0]
+	for i in tqdm(range(100)):
+		curr_weights = initial_weights.copy()
+		perturbations = np.random.randn(weights_size) * 0.1
+		for i, k in enumerate(curr_weights):
+			curr_weights[k] += perturbations[i]
 
-def perturb_weights_continuously(data, weights):
-	pass
+		weighted_assignment = get_weighted_assignment(data['streams'], curr_weights)
+		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting) - initial_error
+
+		errors.append(error)
+
+	print(errors)
+	plt.hist(errors, bins=20)
+	plt.title("Errors upon Weight Perturbations")
+	plt.xlabel("Change in MSE Error")
+	plt.ylabel("Count")
+	plt.savefig('perturb_from_initial.png')
+
+
+def perturb_weights_continuously(data, weights, groundtruth_assignment_by_splitting, spotify_splitting_mse_error):
+	initial_weights = weights.copy()
+	weights_size = len(initial_weights)
+	weighted_assignment = get_weighted_assignment(data['streams'], initial_weights)
+	initial_error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting)
+	errors = [0]
+	for i in tqdm(range(100)):
+		perturbations = np.random.randn(weights_size) * 0.1
+		for i, k in enumerate(initial_weights):
+			initial_weights[k] += perturbations[i]
+
+		weighted_assignment = get_weighted_assignment(data['streams'], initial_weights)
+		error = evaluate.calculate_mean_squared_error(weighted_assignment, groundtruth_assignment_by_splitting) - initial_error
+
+		errors.append(error)
+
+	print(errors)
+	plt.plot(errors)
+	plt.ylim(min(errors) * 1.05, max(max(errors) * 1.05, spotify_splitting_mse_error))
+	plt.title("A Random Walk in Weights")
+	plt.xlabel("Iteration Number")
+	plt.ylabel("Change in MSE Error")
+	plt.axhline(y=(spotify_splitting_mse_error - initial_error), color='orange', linestyle='--', label='Spotify Assignment Error')
+	plt.legend()
+	plt.savefig('perturb_continuously.png')
 
 
 if __name__=='__main__':
@@ -68,6 +114,9 @@ if __name__=='__main__':
 	groundtruth_assignment_by_splitting = get_groundtruth_assignment_by_splitting(data['users'])
 	groundtruth_assignment_by_voting = get_groundtruth_assignment_by_voting(data['users'])
 
+	if any(x == 0 for x in groundtruth_assignment_by_splitting):
+		print("WARNING: an artist gets value 0 in groundtruth!")
+
 	print("\nSpotify:")
 	evaluate_assignment(spotify_assignment, groundtruth_assignment_by_splitting, groundtruth_assignment_by_voting)
 	print(spotify_assignment)
@@ -80,4 +129,9 @@ if __name__=='__main__':
 
 	# minimize_MSE_for_dataset(data, weights)
 	# print(weights)
+
+	spotify_splitting_mse_error = evaluate.calculate_mean_squared_error(spotify_assignment, groundtruth_assignment_by_splitting)
+
+	perturb_weights_from_initial(data, weights, groundtruth_assignment_by_splitting, spotify_splitting_mse_error)
+	perturb_weights_continuously(data, weights, groundtruth_assignment_by_splitting, spotify_splitting_mse_error)
 
