@@ -1,0 +1,4 @@
+# spotify-incentives
+Aligning incentives between Spotify and artists with smarter payouts.
+
+Today’s music industry has witnessed the rise of streaming as the predominant method of music consumption, necessitating an entirely new system for compensating not only artists but also the record labels, distributors, and producers. With all rights holders vying for a share of the same revenue, streaming has also created a zero-sum game in which incentives have become misaligned. In our paper, we explore these issues within the current leading music streaming platform Spotify—specifically in the way it compensates the agents in its ecosystem. We expose problems with Spotify’s current compensation system and then both comprehensively propose and justify solutions that better align the incentives of Spotify with those of its artists and users.
