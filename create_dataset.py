@@ -10,7 +10,7 @@ from tqdm import tqdm
 import random
 
 OUTPUT_FILE = 'dataset.json'
-NUM_USERS = 10000
+NUM_USERS = 2000
 GEOMETRIC_AFFINITY_PROB = .2
 
 STREAMS_BINOMIAL_N = 500
@@ -22,7 +22,7 @@ ARTISTS = {
 	"Drake": {"cult-following": 5, "popularity": 100},
 	"Beyonce": {"cult-following": 10, "popularity": 20},
 	"Radiohead": {"cult-following": 15, "popularity": 10},
-	"MXXNLIGHT": {"cult-following": .2, "popularity": .3},
+	"MXXNLIGHT": {"cult-following": .3, "popularity": .3},
 	"Frank Ocean": {"cult-following": 20, "popularity": 2},
 	"J Cole": {"cult-following": 15, "popularity": 20},
 	"Kendrick": {"cult-following": 15, "popularity": 25},
