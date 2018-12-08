@@ -18,7 +18,7 @@ def calculate_average_absolute_percent_error(predicted, groundtruth):
 	for name in predicted:
 		total_absolute_percent_error += abs(groundtruth[name] - predicted[name]) / groundtruth[name]
 
-	return total_absolute_percent_error / total_names
+	return total_absolute_percent_error / total_names * 100
 
 # Returns sum squared error in probability distributions.
 def calculate_sum_squared_error(predicted, groundtruth):
